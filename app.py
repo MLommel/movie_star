@@ -269,12 +269,12 @@ def recommend_nmf(query, model, k=10):
     recommended = ranked[:k]
     return recommended, R_hat_new_filtered.T.sort_values(by=["new_user"], ascending=False)
 
-if recommender == "NMF Recommender":
-        recommend_nmf(user_query, NMF_MODEL, k=10)
-    elif recommender == "Distance Recommender":
-        recommend_nmf(user_query, DISTANCE_MODEL, k=10)
-    else:
-        print("error with chosing recomender system")
+#if recommender == "NMF Recommender":
+#    recommend_nmf(user_query, NMF_MODEL, k=10)
+#elif recommender == "Distance Recommender":
+ #   recommend_nmf(user_query, DISTANCE_MODEL, k=10)
+#else:
+  #  print("error with chosing recomender system")
 
 st.write("this is the end! Matze")
 #AgGrid(BEST_MOVIES.head(20))
