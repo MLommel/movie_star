@@ -175,12 +175,107 @@ else:
             "recommender type",
             ["NMF Recommender","Distance Recommender"]
             )
+        st.write("This is under Recomemnder Matthias!")
     with col4:
         st.write("###")
         recommend_button = st.button(label="recommed movies")
+    
 
     #load user query
     user_query = json.load(open("user_query.json"))
+
+
+def recommend_nn(query, model, Rt, k=10):
+    """
+    Filters and recommends the top k movies for any given input query based on a trained NMF model. 
+    Returns a list of k movie ids.
+    """
+        
+    # 1. construct new_user-item dataframe given the query
+    new_user_dataframe =  pd.DataFrame(query, columns=movies['title'], index=['new_user'])
+    # 1.2. fill the NaN
+    new_user_dataframe_imputed = new_user_dataframe.fillna(0) #better mean
+    # 2. scoring
+    # calculates the distances to all other users in the data!
+    similarity_scores, neighbor_ids = model.kneighbors(
+    new_user_dataframe_imputed,
+    n_neighbors=15,
+    return_distance=True
+    )
+
+    # sklearn returns a list of predictions
+    # extract the first and only value of the list
+
+    neighbors_df = pd.DataFrame(
+    data = {'neighbor_id': neighbor_ids[0], 'similarity_score': similarity_scores[0]}
+    )
     
-AgGrid(BEST_MOVIES.head(20))
+    # 3. ranking
+    # only look at ratings for users that are similar!
+    neighborhood = Rt.iloc[neighbor_ids[0]]
+  
+    
+        # filter out movies already seen by the user
+    neighborhood_filtered = neighborhood.drop(query.keys(),axis=1)
+   
+
+    # calculate the summed up rating for each movie
+    # summing up introduces a bias for popular movies
+    # averaging introduces bias for movies only seen by few users in the neighboorhood
+
+    df_score = neighborhood_filtered.sum().sort_values(ascending=False)
+    
+    # return the top-k highest rated movie ids or titles
+    df_score_ranked = df_score.sort_values(ascending=False).index.tolist()
+    recommended = df_score_ranked[:k]
+    return recommended, df_score
+
+def recommend_nmf(query, model, k=10):
+    """
+    Filters and recommends the top k movies for any given input query based on a trained NMF model. 
+    Returns a list of k movie ids.
+    """
+    
+    # 1. construct new_user-item dataframe given the query(votings of the new user)
+   
+    new_user_dataframe = pd.DataFrame(query, columns=movies['title'], index=['new_user'])
+   
+    new_user_dataframe_imputed =new_user_dataframe.fillna(0)
+
+    P_new_user_matrix = model.transform(new_user_dataframe_imputed)
+    # get as dataframe for a better visualizarion
+    P_new_user = pd.DataFrame(P_new_user_matrix, 
+                         columns = model.get_feature_names_out(),
+                         index = ['new_user'])
+    R_hat_new_user_matrix = np.dot(P_new_user,Q)
+    # get as dataframe for a better visualizarion
+    R_hat_new_user = pd.DataFrame(data=R_hat_new_user_matrix,
+                         columns=movies['title'],
+                         index = ['new_user'])
+    R_hat_new_filtered = R_hat_new_user#.drop(new_user_query.keys(), axis=1)
+    R_hat_new_filtered.T.sort_values(by=["new_user"], ascending=False).index.tolist()
+    ranked =  R_hat_new_filtered.T.sort_values(by=["new_user"], ascending=False).index.tolist()
+    # 2. scoring
+    
+        # calculate the score with the NMF model
+    
+    
+    # 3. ranking
+    
+        # filter out movies already seen by the user
+    
+        # return the top-k highest rated movie ids or titles
+    
+    recommended = ranked[:k]
+    return recommended, R_hat_new_filtered.T.sort_values(by=["new_user"], ascending=False)
+
+if recommender == "NMF Recommender":
+        recommend_nmf(user_query, NMF_MODEL, k=10)
+    elif recommender == "Distance Recommender":
+        recommend_nmf(user_query, DISTANCE_MODEL, k=10)
+    else:
+        print("error with chosing recomender system")
+
+st.write("this is the end! Matze")
+#AgGrid(BEST_MOVIES.head(20))
     
