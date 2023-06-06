@@ -6,6 +6,16 @@ import time
 from IPython.display import HTML
 import pickle
 import json
+import numpy as np
+import pandas as pd
+
+
+#import models
+from sklearn.neighbors import NearestNeighbors
+from sklearn.decomposition import NMF 
+from sklearn.neighbors import KNeighborsClassifier
+
+
 
 import streamlit as st
 from st_aggrid import AgGrid
@@ -17,11 +27,11 @@ BEST_MOVIES.rename(
     )
 TITLES = ["---"] + list(BEST_MOVIES['title'].sort_values()) 
 
-#with open('nmf_model1.pkl', 'rb') as file:
- #   DISTANCE_MODEL = pickle.load(file)
+with open('modelnn.pkl', 'rb') as file:
+    DISTANCE_MODEL = pickle.load(file)
 
-#with open('nmf_recommender.pkl', 'rb') as file:
-#    NMF_MODEL = pickle.load(file)
+with open('nmf_mode.pkl', 'rb') as file:
+    NMF_MODEL = pickle.load(file)
 
 # sidebar
 with st.sidebar:
