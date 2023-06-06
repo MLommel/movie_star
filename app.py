@@ -20,8 +20,46 @@ from sklearn.neighbors import KNeighborsClassifier
 import streamlit as st
 from st_aggrid import AgGrid
 
+movies = pd.read_csv('data/movies.csv')
+rating = pd.read_csv('data/ratings.csv')
+tags = pd.read_csv('data/tags.csv')
+links = pd.read_csv('data/links.csv')
 
-def recommend_nn(query, model, Rt, k=10):
+# calculate the number of ratings per movie
+rating_count = rating.groupby('movieId')[['rating']].count()
+
+# filter for movies with more than 20 ratings and extract the index
+popular_movies = rating_count[rating_count['rating']>20].index
+
+# filter the ratings matrix and only keep the popular movies
+dfn = rating[rating['movieId'].isin(popular_movies)].copy()
+
+# need to remake user ids and movie ids since they are not sequential
+user_ids = dfn['userId'].unique()
+user_id_map = {v:k for k,v in enumerate(user_ids)} #reduce with -1 user Id
+dfn['userId'] = dfn['userId'].map(user_id_map)
+
+
+movie_ids = dfn['movieId'].unique()
+movie_id_map = {v:k for k,v in enumerate(movie_ids)} 
+dfn['movieId'] = dfn['movieId'].map(movie_id_map)
+
+# Initialize a sparse user-item rating matrix
+# (data, (row_ind, col_ind) from scipy.sparse import csr_matrix
+#careful csr fills NaN=0
+#R = csr_matrix((dfn['rating'], (dfn['userId'], dfn['movieId']))) 
+
+#if all is well, the shape of the user-item matrix R will be (610, 1235)
+
+
+#the movies.csv file should also the transformed accordingly
+
+# filter out unpopular movies
+movies = movies[movies['movieId'].isin(movie_ids)]
+# redefine movie ids
+movies['movieId'] = movies['movieId'].map(movie_id_map)
+
+def recommend_nn(query, model, k=10):
     """
     Filters and recommends the top k movies for any given input query based on a trained NMF model. 
     Returns a list of k movie ids.
