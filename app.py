@@ -64,7 +64,7 @@ def recommend_nn(query, model, Rt, k=10):
     # return the top-k highest rated movie ids or titles
     df_score_ranked = df_score.sort_values(ascending=False).index.tolist()
     recommended = df_score_ranked[:k]
-    return recommended, df_score
+    return recommended#, df_score
 
 def recommend_nmf(query, model, k=10):
     """
@@ -91,7 +91,8 @@ def recommend_nmf(query, model, k=10):
     R_hat_new_filtered = R_hat_new_user#.drop(new_user_query.keys(), axis=1)
     R_hat_new_filtered.T.sort_values(by=["new_user"], ascending=False).index.tolist()
     ranked =  R_hat_new_filtered.T.sort_values(by=["new_user"], ascending=False).index.tolist()
-
+    recommended = ranked[:k]
+    return recommended#, R_hat_new_filtered.T.sort_values(by=["new_user"], ascending=False)
 
 
 BEST_MOVIES = pd.read_csv("best_movies.csv")
@@ -277,21 +278,20 @@ else:
     
         # return the top-k highest rated movie ids or titles
     
-    recommended = ranked[:k]
-    return recommended, R_hat_new_filtered.T.sort_values(by=["new_user"], ascending=False)
+    
 
-user_query = json.load(open("user_query.json"))
+    user_query = json.load(open("user_query.json"))
 
-if recommend_button:
-    if recommender == "NMF Recommender":
-        recommend_nmf(user_query, NMF_MODEL, k=10)
-    elif recommender == "Distance Recommender":
-        recommend_nn(user_query, DISTANCE_MODEL, k=10)
+    if recommend_button:
+        if recommender == "NMF Recommender":
+            recommend_nmf(user_query, NMF_MODEL, k=10)
+        elif recommender == "Distance Recommender":
+            recommend_nn(user_query, DISTANCE_MODEL, k=10)
+        else:
+            st.write("error with chosing recomender system")
+
     else:
-        t.write("error with chosing recomender system")
-
-else:
-    st.write("wornggggg")
+        st.write("wornggggg")
 
 st.write("this is the end! Matze")
 #AgGrid(BEST_MOVIES.head(20))
