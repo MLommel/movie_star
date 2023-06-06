@@ -182,5 +182,5 @@ else:
     #load user query
     user_query = json.load(open("user_query.json"))
     
-#AgGrid(BEST_MOVIES.head(20))
+AgGrid(BEST_MOVIES.head(20))
     
