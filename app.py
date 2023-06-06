@@ -322,14 +322,16 @@ else:
 
     if recommend_button:
         if recommender == "NMF Recommender":
-            recommend_nmf(user_query, NMF_MODEL, k=10)
+            #recommend_nmf(user_query, NMF_MODEL, k=10)
+            AgGrid(BEST_MOVIES.head(10))
         elif recommender == "Distance Recommender":
-            recommend_nn(user_query, DISTANCE_MODEL, k=10)
+            AgGrid(BEST_MOVIES.head(-15))
+            #recommend_nn(user_query, DISTANCE_MODEL, k=10)
         else:
             st.write("error with chosing recomender system")
 
     else:
-        st.write("wornggggg")
+        st.write("Push the button!")
 
 st.write("this is the end! Matze")
 #AgGrid(BEST_MOVIES.head(20))
