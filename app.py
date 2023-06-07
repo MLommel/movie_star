@@ -20,6 +20,11 @@ from st_aggrid import AgGrid
 
 movies = pd.read_csv('data/movies.csv')
 Rt = pd.read_csv('my_Rt.csv')
+new_user_query = {"Toy Story (1995)":5,
+                 "Grumpier Old Men (1995)":2,
+                 "Casino (1995)":3.5,
+                 "Sabrina (1995)":4,
+                 "GoldenEye (1995)":5}
 #rating = pd.read_csv('data/ratings.csv')
 #tags = pd.read_csv('data/tags.csv')
 #links = pd.read_csv('data/links.csv')
@@ -323,11 +328,11 @@ else:
 
     if recommend_button:
         if recommender == "NMF Recommender":
-            recommend_nmf(user_query, NMF_MODEL, k=10)
+            recommend_nmf(new_user_query, NMF_MODEL, k=10)
             #AgGrid(BEST_MOVIES.head(10))
         elif recommender == "Distance Recommender":
             #AgGrid(BEST_MOVIES.tail(5))
-            recommend_nn(user_query, DISTANCE_MODEL, Rt, k=10)
+            recommend_nn(new_user_query, DISTANCE_MODEL, Rt, k=10)
         else:
             st.write("error with chosing recomender system")
 
