@@ -6,7 +6,7 @@ import time
 from IPython.display import HTML
 import pickle
 import json
-
+#from scipy.sparse import csr_matrix
 
 #import models
 from sklearn.neighbors import NearestNeighbors
@@ -18,7 +18,7 @@ from sklearn.neighbors import KNeighborsClassifier
 import streamlit as st
 from st_aggrid import AgGrid
 
-movies = pd.read_csv('best_movies.csv')
+movies = pd.read_csv('data/movies.csv')
 Rt = pd.read_csv('my_Rt.csv')
 #rating = pd.read_csv('data/ratings.csv')
 #tags = pd.read_csv('data/tags.csv')
