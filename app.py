@@ -19,6 +19,7 @@ import streamlit as st
 from st_aggrid import AgGrid
 
 movies = pd.read_csv('best_movies.csv')
+Rt = pd.read_csv('my_Rt.csv')
 #rating = pd.read_csv('data/ratings.csv')
 #tags = pd.read_csv('data/tags.csv')
 #links = pd.read_csv('data/links.csv')
@@ -57,7 +58,7 @@ movies = pd.read_csv('best_movies.csv')
 # redefine movie ids
 #movies['movieId'] = movies['movieId'].map(movie_id_map)
 
-def recommend_nn(query, model, k=10):
+def recommend_nn(query, model, Rt, k=10):
     """
     Filters and recommends the top k movies for any given input query based on a trained NMF model. 
     Returns a list of k movie ids.
@@ -119,6 +120,8 @@ def recommend_nmf(query, model, k=10):
     P_new_user = pd.DataFrame(P_new_user_matrix, 
                          columns = model.get_feature_names_out(),
                          index = ['new_user'])
+    Q_matrix = model.components_
+    Q = pd.DataFrame(Q_matrix, columns=movies['title'], index=model.get_feature_names_out())
     R_hat_new_user_matrix = np.dot(P_new_user,Q)
     # get as dataframe for a better visualizarion
     R_hat_new_user = pd.DataFrame(data=R_hat_new_user_matrix,
@@ -299,7 +302,7 @@ else:
     
 
     #load user query
-    
+    user_query = json.load(open("user_query.json"))
 
 
 
@@ -316,15 +319,15 @@ else:
     
     
 
-    user_query = json.load(open("user_query.json"))
+    
 
     if recommend_button:
         if recommender == "NMF Recommender":
-            #recommend_nmf(user_query, NMF_MODEL, k=10)
-            AgGrid(BEST_MOVIES.head(10))
+            recommend_nmf(user_query, NMF_MODEL, k=10)
+            #AgGrid(BEST_MOVIES.head(10))
         elif recommender == "Distance Recommender":
-            AgGrid(BEST_MOVIES.tail(5))
-            #recommend_nn(user_query, DISTANCE_MODEL, k=10)
+            #AgGrid(BEST_MOVIES.tail(5))
+            recommend_nn(user_query, DISTANCE_MODEL, Rt, k=10)
         else:
             st.write("error with chosing recomender system")
 
