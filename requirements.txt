@@ -5,6 +5,4 @@ streamlit==1.23.1
 streamlit-aggrid==0.3.4.post3
 scikit-learn
 scikit-image
-time
-pickle
-scipy
+
