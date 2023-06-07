@@ -7,6 +7,4 @@ scikit-learn
 scikit-image
 time
 pickle
-json
-scipy.sparse
-streamlit
+scipy
